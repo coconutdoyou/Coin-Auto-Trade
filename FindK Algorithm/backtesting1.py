@@ -11,6 +11,7 @@ coin = "KRW-ETC"
 interval = "minute45"
 fees = 0.0005
 data_count = 1500
+
 for K in range(1,10):
     K = K *0.1
 

@@ -3,15 +3,15 @@ import pandas as pd
 import numpy as np
 import time
 
-# drr = Daily Rate Of Return
+# rr = Daily Rate Of Return
 # crr = Cumulative Rate Of Return
 # mdd = Max Draw Down, dd = Draw Down
 
 def get_crr(df, fees, K) :
     df['range'] = df['high'].shift(1) - df['low'].shift(1)
     df['targetPrice'] = df['open'] + df['range'] * K
-    df['drr'] = np.where(df['high'] > df['targetPrice'], (df['close'] / (1 + fees)) / (df['targetPrice'] * (1 + fees)) , 1)
-    return df['drr'].cumprod()[-2]
+    df['rr'] = np.where(df['high'] > df['targetPrice'], (df['close'] / (1 + fees)) / (df['targetPrice'] * (1 + fees)) , 1)
+    return df['rr'].cumprod()[-2]
 
 def get_best_K(coin, fees, to) :
     try:
@@ -67,9 +67,9 @@ for i in range(1, data_count) :
     print(i)
     df['best_K'][i] = get_best_K(coin, fees, df.index[i])
 df['targetPrice'] = df['open'] + df['range'] * df['best_K']
-df['drr'] = np.where(df['high'] > df['targetPrice'], (df['close'] / (1 + fees)) / (df['targetPrice'] * (1 + fees)) - 1 , 0)
+df['rr'] = np.where(df['high'] > df['targetPrice'], (df['close'] / (1 + fees)) / (df['targetPrice'] * (1 + fees)) - 1 , 0)
 
-df['crr'] = (df['drr'] + 1).cumprod() - 1
+df['crr'] = (df['rr'] + 1).cumprod() - 1
 df['dd'] = -(((df['crr'] + 1).cummax() - (df['crr'] + 1)) / (df['crr'] + 1).cummax())
 
 print("기간수익률 :", df['crr'][-1] * 100, "% , 최대손실률 :", df['dd'].min() * 100, "% , 수수료 :", fees * 100, "%")
